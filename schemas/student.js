@@ -11,12 +11,17 @@ const StudentTask = new Schema({ // SUJEITO A MUDANÇAS
     status: {type: String, default: "pendent"}
 })
 
+const StudentsGroup = new Schema({
+    group: {type: Schema.ObjectId, ref: "groups", required: true}
+})
+
 const StudentSchema = new Schema({
     name: {type: String, required: true},
     discord_id: {type: Number, required: true},
     class: {type: [StundentClassSchema], required: true},
     grade: {type: Number, default: 0.0},
-    tasks: {type: [StudentTask], default: []}
+    tasks: {type: [StudentTask], default: []},
+    groups: {type: [StudentsGroup], default: []}
 })
 
 module.exports = mongoose.model("students",StudentSchema)
