@@ -1,8 +1,9 @@
 require("dotenv/config")
 const env = process.env
-require("/schemas")
-
 const mongoose = require("mongoose")
+require("./schemas/user")
+require("./schemas/class")
+require("./schemas/task")
 
 // Controller responsible for acessing the mongodb database
 
@@ -20,3 +21,10 @@ class dbController {
         return mongoose.model(model)
       }
 }
+
+if (!global.dbController) {
+    console.log("dbController instanciado")
+    global.dbController = new dbController()
+  }
+  
+  module.exports = global.dbController
