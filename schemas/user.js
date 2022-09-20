@@ -20,7 +20,7 @@ const Schema = mongoose.Schema
 const UserSchema = new Schema({
     name: {type: String, required: true},
     discord_id: {type: Number, required:true, unique:true},
-    classes: {type: Object, default: {}},
+    classrooms: {type: Object, required:false},
 })
 
 module.exports = mongoose.model("user", UserSchema)

@@ -10,7 +10,7 @@ const ClassSchema = new Schema({
     name: {type: String, required:true},
     guild_id: {type: Number, required:true, unique:true},
     professor: {type: Schema.ObjectId, ref:"user", required:false},
-    students: {type: Object, default:{}},
+    students: {type: Object, required:false},
     rules: {type: String, default:""},
 })
 
