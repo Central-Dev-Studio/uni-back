@@ -58,17 +58,23 @@ app.get("/user", async (req,res)=> {
 app.post("/create_class", async (req,res)=> {
     console.log("Creating class...")
     if (req.query.guild && req.query.name) {
-        const classroom = await create_class(req.query.guild, req.query.name)
-        if (classroom) {
-            console.log("Success!")
-            res.status(200)
-            res.send({message: "Success!", class: classroom})
-            return
-        } else {
-            console.log("Error!")
-            res.status(402)
-            res.send({message: "Couldn't create classroom!"})
-            return
+        try {
+            const classroom = await create_class(req.query.guild, req.query.name)
+            if (classroom) {
+                console.log("Success!")
+                res.status(200)
+                res.send({message: "Success!", class: classroom})
+                return
+            } else {
+                console.log("Error!")
+                res.status(402)
+                res.send({message: "Couldn't create classroom!"})
+                return
+            }
+        } catch (e) {
+            console.log(e)
+            res.status(404)
+            res.send({message: e})
         }
     } else {
         console.log("Bad Request!")
@@ -81,15 +87,21 @@ app.post("/create_class", async (req,res)=> {
 app.post("/add_student", async (req,res)=> {
     console.log("Adding student...")
     if (req.query.did && req.query.guild) {
-        const updStu = await add_student(req.query.did, req.query.guild)
-        if (updStu) {
-            console.log("Success!")
-            res.status(200)
-            res.send({message: "Success!", class: updStu})
-        } else {
-            console.log("Error!")
-            res.status(402)
-            res.send({message: "Couldn't add student!"})
+        try {
+            const updStu = await add_student(req.query.did, req.query.guild)
+            if (updStu) {
+                console.log("Success!")
+                res.status(200)
+                res.send({message: "Success!", class: updStu})
+            } else {
+                console.log("Error!")
+                res.status(402)
+                res.send({message: "Couldn't add student!"})
+            }
+        } catch (e) {
+            console.log(e)
+            res.status(404)
+            res.send({message: e})
         }
     } else {
         console.log("Bad Request!")
@@ -100,26 +112,39 @@ app.post("/add_student", async (req,res)=> {
 
 app.post("/setup_class", async (req,res)=> {
     console.log("Setting up class...")
-    if (req.query.dids && req.query.guild && req.query.prof) {
-        req.query.dids = JSON.parse(req.query.dids)
+    if (req.query.dids && req.query.guild && req.query.prof && req.query.prof_name) {
+        let tempArr = []
+        for (let i=0;i<req.query.dids.length;i++) {
+            if (i%2 ==0) {
+                tempArr.push([req.query.dids[i],req.query.dids[i+1]])
+            }
+        }
+        req.query.dids = tempArr
         let all_u = req.query.dids.map(e=> {
             return e
         })
         all_u.push([req.query.prof_name,req.query.prof])
-        const students = await bulk_user(all_u, req.query.guild)
-        const classroom = await set_student(req.query.dids,req.query.guild)
-        const professor_class = await set_professor(req.query.prof, req.query.guild)
-        const professor = await update_professor(req.query.prof, req.query.guild)
-        
-        if (classroom && professor_class && professor && students) {
-            console.log("Success!")
-            res.status(200)
-            res.send({message: "Success!"})
-        } else {
-            console.log("Error!")
-            res.status(402)
-            res.send({message: "Coudn't setup class!"})
+        try {
+            const students = await bulk_user(all_u, req.query.guild)
+            const classroom = await set_student(req.query.dids,req.query.guild)
+            const professor_class = await set_professor(req.query.prof, req.query.guild)
+            const professor = await update_professor(req.query.prof, req.query.guild)
+            if (classroom && professor_class && professor && students) {
+                console.log("Success!")
+                res.status(200)
+                res.send({message: "Success!"})
+            } else {
+                console.log("Error!")
+                res.status(402)
+                res.send({message: "Coudn't setup class!"})
+            }
+
+        } catch(e) {
+            console.log(e)
+            res.status(404)
+            res.send({message: e})
         }
+        
     } else {
         console.log("Bad request!")
         res.status(401)
