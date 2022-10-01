@@ -1,10 +1,11 @@
 require("dotenv/config")
 const env = process.env
 const mongoose = require("mongoose")
-require("./schemas/user")
-require("./schemas/class")
-require("./schemas/task")
-
+require("./models/userinclass")
+require("./models/usertask")
+require("./models/user")
+require("./models/class")
+require("./models/task")
 // Controller responsible for acessing the mongodb database
 
 class dbController {
