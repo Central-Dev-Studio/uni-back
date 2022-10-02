@@ -1,10 +1,10 @@
 const dbcontroller = require("../dbcontroller")
+const { find_user } = require("../utils/util")
 
 async function get(req, res) {
     try {
         const discord_id = req.params.did
-        const Users = await dbcontroller.getModel("user")
-        const user = await Users.findOne({discord_id})
+        const user = await find_user(discord_id)
         if (user) {
             res.status(200)
             res.send({message: "Success!", content:user})

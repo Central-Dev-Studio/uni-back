@@ -1,14 +1,14 @@
 const dbcontroller = require("../dbcontroller")
+const { find_class } = require("../utils/util")
 
 async function get(req, res) {
     try {
         const guild_id = req.params.gid
-        const Classes = await dbcontroller.getModel("class")
-        const classes = await Classes.findOne({guild_id})
-        if (classes) {
-            console.log(classes)
+        const classroom = await find_class(guild_id)
+        if (classroom) {
+            console.log(classroom)
             res.status(200)
-            res.send({message: "Success!", content:classes})
+            res.send({message: "Success!", content:classroom})
         } else {
             res.status(400)
             res.send({message: "Can't find class!"})
