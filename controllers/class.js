@@ -5,9 +5,14 @@ async function get(req, res) {
         const guild_id = req.params.gid
         const Classes = await dbcontroller.getModel("class")
         const classes = await Classes.findOne({guild_id})
-        console.log(classes)
-        res.status(200)
-        res.send({message: "Success!", content:classes})
+        if (classes) {
+            console.log(classes)
+            res.status(200)
+            res.send({message: "Success!", content:classes})
+        } else {
+            res.status(400)
+            res.send({message: "Can't find class!"})
+        }
     } catch(e) {
         console.log(e)
         res.status(404)
@@ -21,7 +26,7 @@ async function create(req, res) {
         const info = req.body
         const Classes = await dbcontroller.getModel("class")
         const classroom = await Classes.create(info)
-        console.log(classes)
+        console.log(classroom)
         res.status(200)
         res.send({message: "Success!", content:classroom})
     } catch(e) {
@@ -34,12 +39,17 @@ async function create(req, res) {
 async function update(req, res) {
     try {
         const guild_id = req.params.gid
-        const info = req.params.info
+        const info = req.body
         const Classes = await dbcontroller.getModel("class")
-        const classroom = await Classes.findOneAndUpdate({guild_id}, {$set:info})
-        console.log(classes)
-        req.status(200)
-        res.send({message: "Success!", content:classroom})
+        const classroom = await Classes.findOneAndUpdate({guild_id}, {$set: info}, {new: true})
+        if (classroom) {
+            console.log(classroom)
+            res.status(200)
+            res.send({message: "Success!", content:classroom})
+        } else {
+            res.status(400)
+            res.send({message: "Can't find class!"})
+        }
     } catch(e) {
         console.log(e)
         res.status(404)
@@ -47,14 +57,19 @@ async function update(req, res) {
     } 
 }
 
-async function del(res, res) {
+async function del(req, res) {
     try {
         const guild_id = req.params.gid
         const Classes = await dbcontroller.getModel("class")
         const classroom = await Classes.deleteOne({guild_id})
-        console.log(classes)
-        res.status(200)
-        res.send({message: "Success!", content:classroom})
+        if (classroom.deletedCount > 0) {
+            console.log(classroom)
+            res.status(200)
+            res.send({message: "Success!", content:classroom})
+        } else {
+            res.status(400)
+            res.send({message: "Can't find class!"})
+        }
     } catch(e) {
         console.log(e)
         res.status(404)

@@ -8,4 +8,6 @@ const UserInClassSchema = new Schema({
     class: {type: Schema.ObjectId, ref: "class", required: true},
 })
 
+UserInClassSchema.index({user:1, class:1}, {unique: true})
+
 module.exports = mongoose.model("user_in_class", UserInClassSchema)

@@ -5,12 +5,16 @@ async function get(req, res) {
         const discord_id = req.params.did
         const Users = await dbcontroller.getModel("user")
         const user = await Users.findOne({discord_id})
-        console.log(user)
-        res.status(200)
-        res.send({message: "Success!", content:user})
+        if (user) {
+            res.status(200)
+            res.send({message: "Success!", content:user})
+        } else {
+            res.status(400)
+            res.send({message: "Can't find user!"})
+        }
     } catch(e) {
         console.log(e)
-        res.status(400)
+        res.status(404)
         res.send({message: e})
     }
 }
@@ -26,7 +30,7 @@ async function create(req, res) {
         res.send({message: "Success!", content:user})
     } catch(e) {
         console.log(e)
-        res.status(400)
+        res.status(404)
         res.send({message: e})
     }
 }
@@ -42,7 +46,7 @@ async function update(req, res) {
         res.send({message: "Success!", content:user})
     } catch(e) {
         console.log(e)
-        res.status(400)
+        res.status(404)
         res.send({message: e})
     }
 }
@@ -57,7 +61,7 @@ async function del(req,res) {
         res.send({message: "Success!", content: user})
     } catch(e) {
         console.log(e)
-        res.status(400)
+        res.status(404)
         res.send({message: e})
     }
 }
