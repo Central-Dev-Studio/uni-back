@@ -77,6 +77,15 @@ async function del(req, res) {
     }
 }
 
+async function setup(req, res) {
+    try {
+        const guild_id = req.params.gid
+        const students = req.body.students
+        const professor = req.body.professor
+        // pegar lista de ids dos documentos de students e criar user_in_class com base nisso - fazer isso através de uma função em utils que faz um map com bulkwrite
+    }
+}
+
 module.exports = {
     get,
     create,
