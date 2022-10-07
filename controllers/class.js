@@ -1,5 +1,5 @@
 const dbcontroller = require("../dbcontroller")
-const { find_class } = require("../utils/util")
+const { find_class, return_students, create_classroom, bulkStudInClass, professor_in_class } = require("../utils/util")
 
 async function get(req, res) {
     try {
@@ -82,7 +82,22 @@ async function setup(req, res) {
         const guild_id = req.params.gid
         const students = req.body.students
         const professor = req.body.professor
-        // pegar lista de ids dos documentos de students e criar user_in_class com base nisso - fazer isso através de uma função em utils que faz um map com bulkwrite
+        students = await return_students(students)
+        const classroom = await create_classroom(guild_id) //trocar pra create_classroom
+        const student_in_class = await bulkStudInClass(students, classroom)// aqui vai funcao bulkStudInClass()
+        professor = await professor_in_class
+        if (classroom && students && students.length > 0 && student_in_class && professor) {
+            console.log(classroom)
+            res.status(200)
+            res.send({message: "Success!", content: {students,classroom,student_in_class,}})
+        } else {
+            res.status(400)
+            res.send({message: "Can't setup class!"})
+        }
+    } catch(e) {
+        console.log(e)
+        res.status(404)
+        res.send({message: e})
     }
 }
 
@@ -91,4 +106,5 @@ module.exports = {
     create,
     update,
     del,
+    setup,
 }
