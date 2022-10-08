@@ -22,20 +22,17 @@ async function find_class(guild_id) {
     return classroom
 }
 
-async function return_students(student_ids, name) {
+async function return_students(students) {
     const Users = await dbcontroller.getModel("user")
-    // fazer bulk utilizando find com filter em $in
-    const bulkUser = student_ids.map(id => {
+    const bulkUser = students.map(join => {
         return ({
             replaceOne: {
                 filter: {
-                    discord_id: {
-                        $in: student_ids
-                    }
+                    discord_id: join[1]
                 },
                 replacement: {
-                    discord_id: id,
-                    name: name,
+                    discord_id: join[1],
+                    name: join[0],
                 },
                 upsert: true
             }
@@ -51,7 +48,6 @@ async function create_classroom(guild_id, name) {
     return classroom
 }
 
-// async function bulkStudInClass(students, classroom)
 async function bulkStudInClass(students, classroom) {
     const Users_in_class = await dbcontroller.getModel("user_in_class")
     const bulkStud = students.map(user => {
@@ -67,11 +63,29 @@ async function bulkStudInClass(students, classroom) {
     return to_return
 }
 
-async function professor_in_class(user, classroom) {
+async function professor_in_class(discord_id, name, classroom) {
+    const Users = await dbcontroller.getModel("user")
+    const user = await Users.replaceOne({discord_id},{discord_id, name}, {upsert: true})
     const Users_in_class = await dbcontroller.getModel("user_in_class")
-    const professor = await Users_in_class.replaceOne({user, class:classroom},{user, class:classroom},{upsert:true})
+    const professor = await Users_in_class.replaceOne({user:user._id, class:classroom},{user:user._id, class:classroom, role:"professor"},{upsert:true})
     return professor
 }
+
+async function findMany_users(ids) {
+    const Users = await dbcontroller.getModel("user")
+    const users = await Users.find({discord_id: {$in: ids}})
+    return users
+}
+
+async function result_find_users(students) {
+    await return_students(students)
+    students = students.map(join => {
+        return join[1]
+    })
+    const users = await findMany_users(students)
+    return users
+}
+
 module.exports = {
     find_create_user,
     find_user,
@@ -80,4 +94,6 @@ module.exports = {
     create_classroom,
     bulkStudInClass,
     professor_in_class,
+    findMany_users,
+    result_find_users,
 }

@@ -1,5 +1,5 @@
 const dbcontroller = require("../dbcontroller")
-const { find_class, return_students, create_classroom, bulkStudInClass, professor_in_class } = require("../utils/util")
+const { find_class, result_find_users, bulkStudInClass, professor_in_class } = require("../utils/util")
 
 async function get(req, res) {
     try {
@@ -24,6 +24,7 @@ async function get(req, res) {
 async function create(req, res) {
     try {
         const info = req.body
+        console.log(info)
         const Classes = await dbcontroller.getModel("class")
         const classroom = await Classes.create(info)
         console.log(classroom)
@@ -80,12 +81,14 @@ async function del(req, res) {
 async function setup(req, res) {
     try {
         const guild_id = req.params.gid
-        const students = req.body.students
-        const professor = req.body.professor
-        students = await return_students(students)
-        const classroom = await create_classroom(guild_id) //trocar pra create_classroom
-        const student_in_class = await bulkStudInClass(students, classroom)// aqui vai funcao bulkStudInClass()
-        professor = await professor_in_class
+        let students = req.body.students
+        let professor = req.body.professor
+        console.log(students)
+        students = await result_find_users(students)
+        console.log(students)
+        const classroom = await find_class(guild_id)
+        const student_in_class = await bulkStudInClass(students, classroom)
+        professor = await professor_in_class(professor[1], professor[0], classroom._id)
         if (classroom && students && students.length > 0 && student_in_class && professor) {
             console.log(classroom)
             res.status(200)
